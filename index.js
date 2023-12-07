@@ -167,7 +167,7 @@ function spawnEnemies() {
 		const angle = Math.atan2(player.y - y, player.x - x);
 		const velocity = { x: Math.cos(angle), y: Math.sin(angle) };
 
-		enemies.push(new Enemy(x, y, radius, color, velocity, Math.random() * 3));
+		enemies.push(new Enemy(x, y, radius, color, velocity, Math.random() * 2));
 	}, 1000);
 }
 
@@ -229,8 +229,9 @@ function animate() {
 					);
 				}
 
-				if (enemy.radius > 10) {
-					gsap.to(enemy, { radius: enemy.radius - 5 });
+				if (enemy.radius > 12) {
+					//gsap.to(enemy, { radius: enemy.radius - 5 });
+					enemy.radius -= 7;
 				} else {
 					score += 10;
 					scoreEl.innerHTML = score;
