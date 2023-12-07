@@ -9,9 +9,28 @@
 			margin: 0;
 			overflow: hidden;
 		}
+
+		.score {
+			position: absolute;
+			color: white;
+			font-family: Arial, Helvetica, sans-serif;
+			padding: 8px;
+			font-size: 1em;
+			user-select: none;
+		}
 	</style>
 	<body>
+		<div class="score">
+			<span>SCORE: <span id="score">0</span></span>
+		</div>
 		<canvas></canvas>
 	</body>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.3/gsap.min.js"
+		integrity="sha512-7Au1ULjlT8PP1Ygs6mDZh9NuQD0A5prSrAUiPHMXpU6g3UMd8qesVnhug5X4RoDr35x5upNpx0A6Sisz1LSTXA=="
+		crossorigin="anonymous"
+		referrerpolicy="no-referrer"
+	></script>
+	<script src="keydrown.js"></script>
 	<script src="./index.js"></script>
 </html>
