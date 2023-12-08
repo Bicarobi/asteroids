@@ -1,5 +1,11 @@
 const canvas = document.querySelector("canvas");
 const scoreEl = document.querySelector("#score");
+const modalEl = document.querySelector("#modal");
+const modalScoreEl = document.querySelector("#modalScore");
+const buttonRestartEl = document.querySelector("#restartButton");
+
+const startModalEl = document.querySelector("#startModal");
+const buttonStartEl = document.querySelector("#startButton");
 
 const c = canvas.getContext("2d");
 
@@ -139,16 +145,30 @@ class Particle {
 	}
 }
 
-const player = new Player(canvas.width / 2, canvas.height / 2, 10, "white");
+let player = new Player(canvas.width / 2, canvas.height / 2, 10, "white");
 
-const projectiles = [];
-const enemies = [];
-const particles = [];
+let projectiles = [];
+let enemies = [];
+let particles = [];
 
-console.log(player, canvas.width, canvas.height);
+let animationId;
+let intervalId;
+let score = 0;
+
+function init() {
+	player = new Player(canvas.width / 2, canvas.height / 2, 10, "white");
+
+	projectiles = [];
+	enemies = [];
+	particles = [];
+
+	animationId;
+	score = 0;
+	scoreEl.innerHTML = 0;
+}
 
 function spawnEnemies() {
-	setInterval(() => {
+	intervalId = setInterval(() => {
 		const radius = Math.random() * (30 - 4) + 4;
 
 		let x;
@@ -171,9 +191,6 @@ function spawnEnemies() {
 	}, 1000);
 }
 
-let animationId;
-let score = 0;
-
 function animate() {
 	animationId = requestAnimationFrame(animate);
 
@@ -184,15 +201,19 @@ function animate() {
 	player.update();
 	movement = { x: 0, y: 0 };
 
-	particles.forEach((particle, index) => {
+	for (let index = particles.length - 1; index >= 0; index--) {
+		const particle = particles[index];
+
 		if (particle.alpha <= 0) {
 			particles.slice(index, 1);
 		} else {
 			particle.update();
 		}
-	});
+	}
 
-	projectiles.forEach((projectile, index) => {
+	for (let index = projectiles.length - 1; index >= 0; index--) {
+		const projectile = projectiles[index];
+
 		projectile.update();
 
 		if (
@@ -201,22 +222,30 @@ function animate() {
 			projectile.y + projectile.radius < 0 ||
 			projectile.y - projectile.radius > canvas.height
 		) {
-			setTimeout(() => {
-				projectiles.splice(index, 1);
-			}, 0);
+			projectiles.splice(index, 1);
 		}
-	});
+	}
 
-	enemies.forEach((enemy, index) => {
+	for (let index = enemies.length - 1; index >= 0; index--) {
+		const enemy = enemies[index];
+
 		enemy.update();
 
 		const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
 
 		if (dist - enemy.radius - player.radius < 1) {
 			cancelAnimationFrame(animationId);
+			clearInterval(intervalId);
+			modalEl.style.display = "block";
+			modalScoreEl.innerHTML = score;
+
+			startModalEl.style.display = "none";
+
+			gsap.fromTo("#modal", { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25, ease: "expo.in" });
 		}
 
-		projectiles.forEach((projectile, projectileIndex) => {
+		for (let projectileIndex = projectiles.length - 1; projectileIndex >= 0; projectileIndex--) {
+			const projectile = projectiles[projectileIndex];
 			const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
 
 			if (dist - enemy.radius - projectile.radius < 1) {
@@ -235,16 +264,12 @@ function animate() {
 				} else {
 					score += 10;
 					scoreEl.innerHTML = score;
-					setTimeout(() => {
-						enemies.splice(index, 1);
-					}, 0);
+					enemies.splice(index, 1);
 				}
-				setTimeout(() => {
-					projectiles.splice(projectileIndex, 1);
-				}, 0);
+				projectiles.splice(projectileIndex, 1);
 			}
-		});
-	});
+		}
+	}
 }
 
 window.addEventListener("click", (event) => {
@@ -264,6 +289,46 @@ window.addEventListener("click", (event) => {
 	);
 });
 
+buttonRestartEl.addEventListener("click", (event) => {
+	c.fillStyle = "black";
+	c.fillRect(0, 0, canvas.width, canvas.height);
+
+	init();
+	animate();
+	spawnEnemies();
+	modalEl.style.display = "none";
+
+	gsap.to("#modal", {
+		opacity: 0,
+		scale: 0.8,
+		duration: 0.25,
+		ease: "expo.in",
+		onComplete: () => {
+			modalEl.style.display = "none";
+		},
+	});
+});
+
+buttonStartEl.addEventListener("click", (event) => {
+	init();
+	animate();
+	spawnEnemies();
+
+	gsap.to("#startModal", {
+		opacity: 0,
+		scale: 0.8,
+		duration: 0.25,
+		ease: "expo.in",
+		onComplete: () => {
+			startModalEl.style.display = "none";
+		},
+	});
+
+	kd.run(function () {
+		kd.tick();
+	});
+});
+
 let movement = { x: 0, y: 0 };
 
 kd.W.down(() => {
@@ -280,29 +345,4 @@ kd.A.down(() => {
 
 kd.D.down(() => {
 	movement.x = 1;
-});
-
-/*window.addEventListener("keydown", (event) => {
-	console.log(event.code);
-
-	if (event.code == "KeyW") {
-		movement.y = -moveSpeed;
-	} else if (event.code == "KeyS") {
-		movement.y = moveSpeed;
-	}
-
-	if (event.code == "KeyA") {
-		movement.x = -moveSpeed;
-	} else if (event.code == "KeyD") {
-		movement.x = moveSpeed;
-	}
-
-	player.velocity = { x: movement.x, y: movement.y };
-});*/
-
-animate();
-spawnEnemies();
-
-kd.run(function () {
-	kd.tick();
 });

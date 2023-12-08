@@ -2,26 +2,67 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Document</title>
+		<title>Asteroids Game</title>
 	</head>
 	<style>
 		body {
 			margin: 0;
 			overflow: hidden;
+			font-family: Arial, Helvetica, sans-serif;
+			background-color: black;
 		}
 
 		.score {
 			position: absolute;
 			color: white;
-			font-family: Arial, Helvetica, sans-serif;
 			padding: 8px;
 			font-size: 1em;
 			user-select: none;
+		}
+
+		#modal {
+			display: none;
+			position: absolute;
+			background-color: white;
+			font-size: 1.2em;
+			text-align: center;
+			padding: 16px 48px;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			left: 50%;
+			border-radius: 5px;
+		}
+
+		#startModal {
+			position: absolute;
+			background-color: white;
+			font-size: 1.2em;
+			text-align: center;
+			padding: 16px 48px;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			left: 50%;
+			border-radius: 5px;
 		}
 	</style>
 	<body>
 		<div class="score">
 			<span>SCORE: <span id="score">0</span></span>
+		</div>
+		<div id="modal">
+			<h1 style="font-size: 1em">GAME OVER</h1>
+			<h1 id="modalScore" style="margin: 0">0</h1>
+			<h1 style="font-size: 1em; margin-top: 0; margin-bottom: 20px">POINTS</h1>
+			<button id="restartButton" style="background-color: #d7d7d7; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer">
+				RESTART
+			</button>
+		</div>
+
+		<div id="startModal">
+			<h1 style="font-size: 1em">ASTEROIDS GAME</h1>
+			<button id="startButton" style="background-color: #d7d7d7; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer">
+				START
+			</button>
 		</div>
 		<canvas></canvas>
 	</body>
