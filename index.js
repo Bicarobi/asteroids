@@ -145,15 +145,43 @@ class Particle {
 	}
 }
 
+class Sound {
+	constructor(source, effect) {
+		this.effect = effect;
+
+		this.sound = document.createElement("audio");
+		this.sound.src = source;
+		this.sound.setAttribute("preload", "auto");
+		this.sound.setAttribute("controls", "none");
+		this.sound.style.display = "none";
+		document.body.appendChild(this.sound);
+	}
+
+	playSound() {
+		this.sound.currentTime = 0;
+		this.sound.play();
+
+		if (this.effect) {
+			this.sound.addEventListener("ended", () => {
+				this.sound.remove();
+			});
+		}
+	}
+}
+
 let player = new Player(canvas.width / 2, canvas.height / 2, 10, "white");
 
 let projectiles = [];
 let enemies = [];
 let particles = [];
+let destroySoundEffects = [];
+let shootSoundEffects = [];
 
 let animationId;
 let intervalId;
 let score = 0;
+
+let gameOverSound = new Sound("./sounds/GameOver.wav", false);
 
 function init() {
 	player = new Player(canvas.width / 2, canvas.height / 2, 10, "white");
@@ -242,6 +270,8 @@ function animate() {
 			startModalEl.style.display = "none";
 
 			gsap.fromTo("#modal", { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25, ease: "expo.in" });
+
+			gameOverSound.playSound();
 		}
 
 		for (let projectileIndex = projectiles.length - 1; projectileIndex >= 0; projectileIndex--) {
@@ -264,6 +294,10 @@ function animate() {
 				} else {
 					score += 10;
 					scoreEl.innerHTML = score;
+
+					destroySoundEffect = new Sound("./sounds/Destroy.wav", true);
+					destroySoundEffect.playSound();
+
 					enemies.splice(index, 1);
 				}
 				projectiles.splice(projectileIndex, 1);
@@ -287,6 +321,9 @@ window.addEventListener("click", (event) => {
 			velocity
 		)
 	);
+
+	shootSoundEffect = new Sound("./sounds/Shoot.wav", true);
+	shootSoundEffect.playSound();
 });
 
 buttonRestartEl.addEventListener("click", (event) => {
