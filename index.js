@@ -177,8 +177,6 @@ class Sound {
 	}
 }
 
-let mousePos = { x, y };
-
 let player = new Player(canvas.width / 2, canvas.height / 2, 10, "white");
 
 let projectiles = [];
@@ -190,9 +188,6 @@ let shootSoundEffects = [];
 let animationId;
 let intervalId;
 let score = 0;
-
-let shootInterval;
-let canShoot = true;
 
 let volume = 0.5;
 
@@ -326,55 +321,27 @@ function animate() {
 	}
 }
 
-window.addEventListener(
-	"mousemove",
-	(event) => {
-		mousePos = { x: event.pageX, y: event.pageY };
-		console.log();
-	},
-	false
-);
+window.addEventListener("click", (event) => {
+	if (gameStarted) {
+		const angle = Math.atan2(event.clientY - player.y, event.clientX - player.x);
+		const velocity = { x: Math.cos(angle), y: Math.sin(angle) };
 
-window.addEventListener("mousedown", (event) => {
-	shootLoop(event);
-});
+		const radius = 5;
 
-window.addEventListener("mouseup", (event) => {
-	clearInterval(shootInterval);
-	shootInterval = false;
-});
+		projectiles.push(
+			new Projectile(
+				player.x + (player.radius + radius) * Math.cos(angle),
+				player.y + (player.radius + radius) * Math.sin(angle),
+				5,
+				"white",
+				velocity
+			)
+		);
 
-function shoot(event) {
-	const angle = Math.atan2(event.clientY - player.y, event.clientX - player.x);
-	const velocity = { x: Math.cos(angle), y: Math.sin(angle) };
-
-	const radius = 5;
-
-	projectiles.push(
-		new Projectile(
-			player.x + (player.radius + radius) * Math.cos(angle),
-			player.y + (player.radius + radius) * Math.sin(angle),
-			5,
-			"white",
-			velocity
-		)
-	);
-
-	shootSoundEffect = new Sound("./sounds/Shoot.wav", true);
-	shootSoundEffect.playSound();
-
-	canShoot = true;
-}
-
-function shootLoop(event) {
-	if (gameStarted && !shootInterval && canShoot == true) {
-		canShoot = false;
-		shoot(event);
-		shootInterval = setInterval(() => {
-			shoot(event);
-		}, 500);
+		shootSoundEffect = new Sound("./sounds/Shoot.wav", true);
+		shootSoundEffect.playSound();
 	}
-}
+});
 
 buttonRestartEl.addEventListener("click", (event) => {
 	c.fillStyle = "black";
