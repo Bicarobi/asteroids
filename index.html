@@ -20,6 +20,24 @@
 			user-select: none;
 		}
 
+		.sound-container {
+			position: absolute;
+			right: 0;
+			color: white;
+			padding: 8px;
+			font-size: 1em;
+			display: flex;
+			align-items: center;
+			flex-direction: column;
+			width: 120px;
+		}
+
+		.ui {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+		}
+
 		#modal {
 			display: none;
 			position: absolute;
@@ -46,9 +64,17 @@
 		}
 	</style>
 	<body>
-		<div class="score">
-			<span>SCORE: <span id="score">0</span></span>
+		<div class="ui">
+			<div class="score">
+				<span>SCORE: <span id="score">0</span></span>
+			</div>
+
+			<div class="sound-container">
+				<span style="user-select: none">SOUND: <span id="sound">50%</span></span>
+				<input id="soundSlider" type="range" min="0" max="100" value="50" style="width: 100px" class="slider" />
+			</div>
 		</div>
+
 		<div id="modal">
 			<h1 style="font-size: 1em">GAME OVER</h1>
 			<h1 id="modalScore" style="margin: 0">0</h1>

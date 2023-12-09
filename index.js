@@ -7,6 +7,9 @@ const buttonRestartEl = document.querySelector("#restartButton");
 const startModalEl = document.querySelector("#startModal");
 const buttonStartEl = document.querySelector("#startButton");
 
+const soundEl = document.querySelector("#sound");
+const soundSliderEl = document.querySelector("#soundSlider");
+
 const c = canvas.getContext("2d");
 
 canvas.width = innerWidth;
@@ -154,6 +157,7 @@ class Sound {
 		this.sound.setAttribute("preload", "auto");
 		this.sound.setAttribute("controls", "none");
 		this.sound.style.display = "none";
+		this.sound.volume = volume;
 		document.body.appendChild(this.sound);
 	}
 
@@ -167,7 +171,13 @@ class Sound {
 			});
 		}
 	}
+
+	changeVolume() {
+		this.sound.volume = volume;
+	}
 }
+
+let mousePos = { x, y };
 
 let player = new Player(canvas.width / 2, canvas.height / 2, 10, "white");
 
@@ -181,6 +191,13 @@ let animationId;
 let intervalId;
 let score = 0;
 
+let shootInterval;
+let canShoot = true;
+
+let volume = 0.5;
+
+let gameStarted = false;
+
 let gameOverSound = new Sound("./sounds/GameOver.wav", false);
 
 function init() {
@@ -193,6 +210,8 @@ function init() {
 	animationId;
 	score = 0;
 	scoreEl.innerHTML = 0;
+
+	gameStarted = true;
 }
 
 function spawnEnemies() {
@@ -272,6 +291,7 @@ function animate() {
 			gsap.fromTo("#modal", { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25, ease: "expo.in" });
 
 			gameOverSound.playSound();
+			gameStarted = false;
 		}
 
 		for (let projectileIndex = projectiles.length - 1; projectileIndex >= 0; projectileIndex--) {
@@ -306,7 +326,25 @@ function animate() {
 	}
 }
 
-window.addEventListener("click", (event) => {
+window.addEventListener(
+	"mousemove",
+	(event) => {
+		mousePos = { x: event.pageX, y: event.pageY };
+		console.log();
+	},
+	false
+);
+
+window.addEventListener("mousedown", (event) => {
+	shootLoop(event);
+});
+
+window.addEventListener("mouseup", (event) => {
+	clearInterval(shootInterval);
+	shootInterval = false;
+});
+
+function shoot(event) {
 	const angle = Math.atan2(event.clientY - player.y, event.clientX - player.x);
 	const velocity = { x: Math.cos(angle), y: Math.sin(angle) };
 
@@ -324,7 +362,19 @@ window.addEventListener("click", (event) => {
 
 	shootSoundEffect = new Sound("./sounds/Shoot.wav", true);
 	shootSoundEffect.playSound();
-});
+
+	canShoot = true;
+}
+
+function shootLoop(event) {
+	if (gameStarted && !shootInterval && canShoot == true) {
+		canShoot = false;
+		shoot(event);
+		shootInterval = setInterval(() => {
+			shoot(event);
+		}, 500);
+	}
+}
 
 buttonRestartEl.addEventListener("click", (event) => {
 	c.fillStyle = "black";
@@ -364,6 +414,13 @@ buttonStartEl.addEventListener("click", (event) => {
 	kd.run(function () {
 		kd.tick();
 	});
+});
+
+soundSliderEl.addEventListener("change", (event) => {
+	volume = event.target.value / 100;
+
+	soundEl.innerHTML = volume * 100 + "%";
+	gameOverSound.changeVolume(volume);
 });
 
 let movement = { x: 0, y: 0 };
