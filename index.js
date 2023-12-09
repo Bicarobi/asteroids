@@ -177,6 +177,8 @@ class Sound {
 	}
 }
 
+let mousePos = { x: 0, y: 0 };
+
 let player = new Player(canvas.width / 2, canvas.height / 2, 10, "white");
 
 let projectiles = [];
@@ -188,6 +190,10 @@ let shootSoundEffects = [];
 let animationId;
 let intervalId;
 let score = 0;
+
+let shootInterval;
+let canShoot = true;
+let shootTimer;
 
 let volume = 0.5;
 
@@ -321,25 +327,66 @@ function animate() {
 	}
 }
 
-window.addEventListener("click", (event) => {
-	if (gameStarted) {
-		const angle = Math.atan2(event.clientY - player.y, event.clientX - player.x);
-		const velocity = { x: Math.cos(angle), y: Math.sin(angle) };
+window.addEventListener(
+	"mousemove",
+	(event) => {
+		mousePos = { x: event.pageX, y: event.pageY };
+	},
+	false
+);
 
-		const radius = 5;
+window.addEventListener("mousedown", () => {
+	shootLoop();
+	shootInterval = setInterval(() => {
+		shootLoop();
+	}, 100);
+});
 
-		projectiles.push(
-			new Projectile(
-				player.x + (player.radius + radius) * Math.cos(angle),
-				player.y + (player.radius + radius) * Math.sin(angle),
-				5,
-				"white",
-				velocity
-			)
-		);
+window.addEventListener("mouseup", () => {
+	clearInterval(shootInterval);
+	shootInterval = false;
+});
 
-		shootSoundEffect = new Sound("./sounds/Shoot.wav", true);
-		shootSoundEffect.playSound();
+function shoot() {
+	const angle = Math.atan2(mousePos.y - player.y, mousePos.x - player.x);
+	const velocity = { x: Math.cos(angle), y: Math.sin(angle) };
+
+	const radius = 5;
+
+	projectiles.push(
+		new Projectile(
+			player.x + (player.radius + radius) * Math.cos(angle),
+			player.y + (player.radius + radius) * Math.sin(angle),
+			5,
+			"white",
+			velocity
+		)
+	);
+
+	shootSoundEffect = new Sound("./sounds/Shoot2.wav", true);
+	shootSoundEffect.playSound();
+}
+
+function shootLoop() {
+	if (gameStarted && canShoot == true) {
+		canShoot = false;
+		shoot();
+
+		shootTimer = setTimeout(() => {
+			canShoot = true;
+		}, 250);
+	}
+}
+
+window.addEventListener("touchstart", function (event) {
+	if (event.touches.length > 1) {
+		console.log(event.touches, "touchstart");
+	}
+});
+
+window.addEventListener("touchmove", function (event) {
+	if (event.touches.length > 1) {
+		console.log(event.touches, "touchmove");
 	}
 });
 

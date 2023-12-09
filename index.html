@@ -73,22 +73,21 @@
 				<span style="user-select: none">SOUND: <span id="sound">50%</span></span>
 				<input id="soundSlider" type="range" min="0" max="100" value="50" style="width: 100px" class="slider" />
 			</div>
-		</div>
+			<div id="modal">
+				<h1 style="font-size: 1em">GAME OVER</h1>
+				<h1 id="modalScore" style="margin: 0">0</h1>
+				<h1 style="font-size: 1em; margin-top: 0; margin-bottom: 20px">POINTS</h1>
+				<button id="restartButton" style="background-color: #d7d7d7; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer">
+					RESTART
+				</button>
+			</div>
 
-		<div id="modal">
-			<h1 style="font-size: 1em">GAME OVER</h1>
-			<h1 id="modalScore" style="margin: 0">0</h1>
-			<h1 style="font-size: 1em; margin-top: 0; margin-bottom: 20px">POINTS</h1>
-			<button id="restartButton" style="background-color: #d7d7d7; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer">
-				RESTART
-			</button>
-		</div>
-
-		<div id="startModal">
-			<h1 style="font-size: 1em">ASTEROIDS GAME</h1>
-			<button id="startButton" style="background-color: #d7d7d7; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer">
-				START
-			</button>
+			<div id="startModal">
+				<h1 style="font-size: 1em">ASTEROIDS GAME</h1>
+				<button id="startButton" style="background-color: #d7d7d7; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer">
+					START
+				</button>
+			</div>
 		</div>
 		<canvas></canvas>
 	</body>
